@@ -36,34 +36,17 @@ class ImageListWidget(QtWidgets.QListWidget):
             if os.path.isfile(img_path):
                 img_name = os.path.splitext(os.path.basename(img_path))[0]
                 item = QListWidgetItem(QIcon(img_path),img_name)
-                # item = QListWidgetItem(QIcon(img_path),img_name)
-                # item.setText(img_name)
-                # item.setIcon(QIcon(img_path))
                 self.addItem(item)
 
-class ImageViewerWidget(QtWidgets.QWidget):
+class ShowLabel(QLabel):
     def __init__(self):
         super().__init__()
-        self.list_widget = ImageListWidget()
-        self.list_widget.setMinimumWidth(250)
-        self.show_label = QLabel(self)
-        self.show_label.full = False
-        self.show_label.resize(550,400)
-        self.show_label.__width = self.show_label.width()
-        self.show_label.__height = self.show_label.height()
-        self.show_label.mouseDoubleClickEvent = self.double_click
-        self.image_paths = []
-        self.currentImgIdx = 0
-        self.currentImg = None
+        self.full = False
+        self.resize(550,400)
+        self.__width = self.width()
+        self.__height = self.height()
 
-        self.layout = QHBoxLayout(self)
-        self.layout.addWidget(self.show_label)
-        self.layout.addWidget(self.list_widget)
-
-        self.list_widget.itemSelectionChanged.connect(self.loadImage)
-
-    def double_click(self, event):
-        self = self.show_label
+    def mouseDoubleClickEvent(self, event):
         print('double_click {}'.format(event))
         if self.full is False:
             print('full')
@@ -80,6 +63,22 @@ class ImageViewerWidget(QtWidgets.QWidget):
             self.showNormal()
             self.resize(self.__width, self.__height)
             # self.show()
+
+class ImageViewerWidget(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.list_widget = ImageListWidget()
+        self.list_widget.setMinimumWidth(250)
+        self.show_label = ShowLabel()
+        self.image_paths = []
+        self.currentImgIdx = 0
+        self.currentImg = None
+
+        self.layout = QHBoxLayout(self)
+        self.layout.addWidget(self.show_label)
+        self.layout.addWidget(self.list_widget)
+
+        self.list_widget.itemSelectionChanged.connect(self.loadImage)
 
     def load_from_paths(self,img_paths=[]):
         self.image_paths = img_paths
